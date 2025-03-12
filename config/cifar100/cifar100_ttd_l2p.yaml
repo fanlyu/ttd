@@ -1,22 +1,22 @@
 CONFIG:
-  run_ccd: True
-  ccd_model: PromptCCD_w_L2P_known_K
+  run_ttd: True
+  ttd_model: TTD_L2P_known_K
   manual_seed: 1234
-  save_path: exp/promptccd_w_l2p_cub_140
-  transductive_evaluation: True   
-  eval_version: ccd
+  save_path: exp/ttd_l2p_c100_70
+  transductive_evaluation: True
+  eval_version: ttd
 
 DATA:
-  dataset: cub200
-  classes: 200
+  dataset: cifar100_images
+  classes: 100
   input_size: 224
   interpolation: 3
   crop_pct: 0.875
-  labelled_data: 140
+  labelled_data: 70
   random_split_ratio: 0.8
-  ccd_split_ratio: [[1, 0], [0]]
-  ccd_split_ratio_test: [[0, 1], [1]]
-  n_stage: 1
+  ttd_split_ratio: [[1, 0, 0, 0], [0, 0, 0], [0, 0], [0]]
+  ttd_split_ratio_test: [[0, 1, 0, 0], [1, 0, 0], [0, 0], [0]]
+  n_stage: 3
   n_channel: 3
   n_views: 2
   use_strong_aug: False
@@ -26,8 +26,8 @@ DATALOADER:
   workers: 4 # dataloader workers
   pin_mem: True
   shuffle: True
-  val_batch_size: 100
-  val_workers: 0
+  val_batch_size: 10
+  val_workers: 4
   use_sampler: True
 
 OPTIM:
@@ -36,7 +36,7 @@ OPTIM:
   optim: SGD
   base_lr: 0
   use_scheduler: True
-  lr_scheduler: CosineLR
+  lr_scheduler: CosineLR 
   power: 0.9
   momentum: 0.9
   weight_decay: 0.00005
@@ -67,11 +67,11 @@ PROMPT:
   prompt_length: 5 
   embedding_key: cls
   prompt_key_init: uniform
-  prompt_pool: True 
+  prompt_pool: True
   prompt_key: True
-  pool_size: 10
-  top_k: 5 
-  batchwise_prompt: True 
+  pool_size: 10 
+  top_k: 5
+  batchwise_prompt: False 
   head_type: prompt
   use_prompt_mask: False
   shared_prompt_pool: True

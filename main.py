@@ -1,15 +1,8 @@
-# ----------------------------------------------------------------------------------------
-# Main file
-#
-# Title: PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery
-# ArXiv: https://arxiv.org/abs/2407.19001
-# Copyright 2024, by Fernando Julio Cendra (fcendra@connect.hku.hk)
-# ----------------------------------------------------------------------------------------
 import argparse
 
 import torch
 from util import config, util
-from data import build_CCD_dataset, build_CCD_dataset_test
+from data import build_TTD_dataset, build_TTD_dataset_test
 from tools import RunContinualTrainer
 
 import warnings
@@ -21,12 +14,12 @@ def get_parser():
     Input: takes arguments from yaml config file located in config/$DATASET$/*.yaml
     Return: a dict with key for argument query
     '''
-    parser = argparse.ArgumentParser(description='PyTorch implementation of ProCCD')
+    parser = argparse.ArgumentParser(description='PyTorch implementation of ProTTD')
     parser.add_argument('--exp_name', type=str, default='ViT_ssk', help='To differentiate each experiments')
 
-    parser.add_argument('--config', type=str, default="config/cifar100/cifar100_promptccd_w_l2p2s.yaml", help='config file')
-    # parser.add_argument('--config', type=str, default="config/tinyimagenet/tiny_promptccd_w_l2p2s.yaml", help='config file')
-    # parser.add_argument('--config', type=str, default="config/cub/cub200_promptccd_w_l2p2s.yaml", help='config file')
+    parser.add_argument('--config', type=str, default="config/cifar100/cifar100_ttd_l2p2s.yaml", help='config file')
+    # parser.add_argument('--config', type=str, default="config/tinyimagenet/tiny_ttd_l2p2s.yaml", help='config file')
+    # parser.add_argument('--config', type=str, default="config/cub/cub200_ttd_l2p2s.yaml", help='config file')
     
     parser.add_argument('--train', action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument('--test', action=argparse.BooleanOptionalAction, default=False)
@@ -55,15 +48,16 @@ def set_debug_apis(state: bool = False):
 
 def main():
     args, config_path = get_parser()
+
     util.seed_everything(args.manual_seed)
     util.check_model_dir(args.save_path, config_path, args.train)
 
-    util.info(f"Creating {args.dataset}'s dataset for CCD task ...")
-    datasets_train = build_CCD_dataset(args=args, split='train')
-    datasets_val = build_CCD_dataset(args=args, split='val')
-    datasets_test = build_CCD_dataset_test(args=args, split='test')
-
-    if args.run_ccd: 
+    util.info(f"Creating {args.dataset}'s dataset for TTD task ...")
+    datasets_train = build_TTD_dataset(args=args, split='train')
+    datasets_val = build_TTD_dataset(args=args, split='val')
+    datasets_test = build_TTD_dataset_test(args=args, split='test')
+    
+    if args.run_ttd: 
         RunContinualTrainer(args, datasets_train, datasets_val, datasets_test)
 
     util.info("Program finished ...")

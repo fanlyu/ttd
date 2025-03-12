@@ -22,7 +22,7 @@ def seed_everything(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.set_float32_matmul_precision('high')
-    torch.set_flush_denormal(True)
+    torch.set_flush_denormal(True) # cek dlu
     info(f"Set seed at {seed}")
 
 

@@ -513,6 +513,7 @@ class VisionTransformer(nn.Module):
         return res
 
     def forward(self, x, task_id=-1, cls_features=None, train=False):
+        # print(f'Input tensor shape: {x.shape}')
         res = self.forward_features(x, task_id=task_id, cls_features=cls_features, train=train)
         res = self.forward_head(res)
         return res

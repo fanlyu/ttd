@@ -1,10 +1,10 @@
 CONFIG:
-  run_ccd: True
-  ccd_model: PromptCCD_w_L2P_known_K
+  run_ttd: True
+  ttd_model: TTD_L2P_known_K
   manual_seed: 1234
-  save_path: exp/promptccd_w_l2p_c100_70
+  save_path: exp/ttd_w_l2p_c100_70
   transductive_evaluation: True
-  eval_version: ccd
+  eval_version: ttd
 
 DATA:
   dataset: cifar100_images
@@ -14,24 +14,24 @@ DATA:
   crop_pct: 0.875
   labelled_data: 70
   random_split_ratio: 0.8
-  ccd_split_ratio: [[1, 0, 0, 0], [0, 0, 0], [0, 0], [0]]
-  ccd_split_ratio_test: [[0, 1, 0, 0], [1, 0, 0], [0, 0], [0]]
-  n_stage: 3
+  ttd_split_ratio: [[0.01, 1], [0]]
+  ttd_split_ratio_test: [[0, 1], [1]]
+  n_stage: 1
   n_channel: 3
   n_views: 2
   use_strong_aug: False
   
 DATALOADER:
   batch_size: 50 # batch size for training
-  workers: 4 # dataloader workers
+  workers: 1 # dataloader workers
   pin_mem: True
   shuffle: True
   val_batch_size: 10
-  val_workers: 4
+  val_workers: 1
   use_sampler: True
 
 OPTIM:
-  stage1_epochs: 200
+  stage1_epochs: 150
   epochs: 1
   optim: SGD
   base_lr: 0
@@ -40,7 +40,7 @@ OPTIM:
   power: 0.9
   momentum: 0.9
   weight_decay: 0.00005
-  eval_every_n_epoch: 5
+  eval_every_n_epoch: 1
   use_pretrained_model_for_eval: False
   selected_pretrained_model_for_eval: dino
   use_gt_for_discovered_data: False

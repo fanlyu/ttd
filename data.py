@@ -18,14 +18,14 @@ get_dataset_funcs = {
     'cub200': data_util.load_CUB_200,
 }
 
-class create_ccd_dataset(Dataset):
+class create_ttd_dataset(Dataset):
     '''
     Input: dataset class and splitted data index list
-    Return: a new dataset class that consists only the splitted data considering CCD stage
+    Return: a new dataset class that consists only the splitted data considering TTD stage
             where stage 0 is labelled data and stage > 0 is unlabelled data
     '''
     def __init__(self, dataset, transform, stage) -> None:
-        super(create_ccd_dataset, self).__init__()
+        super(create_ttd_dataset, self).__init__()
         self.dataset = dataset
         self.transform = transform
         self.batch_labeled_or_not = 1 if stage == 0 else 0
@@ -46,13 +46,13 @@ class create_ccd_dataset(Dataset):
         return self.dataset['len']
 
 
-class create_ccd_test_dataset(Dataset):
+class create_ttd_test_dataset(Dataset):
     '''
     Input: dataset class and splitted data index list
     Return: a new dataset class that consists only the splitted data
     '''
     def __init__(self, unlabelled_dataset, labelled_dataset, transform) -> None:
-        super(create_ccd_test_dataset, self).__init__()
+        super(create_ttd_test_dataset, self).__init__()
         self.labelled_dataset = labelled_dataset
         self.unlabelled_dataset = unlabelled_dataset
         self.transform = transform
@@ -104,6 +104,7 @@ def add_dataset_attribute(dataset):
         'len': len(index)
     }
     
+    # return dataset, transform, max(index)
     return dataset, transform
 
 
@@ -147,7 +148,7 @@ def create_dataloader(args, dataset_i, stage_i):
     # create dataloader for evaluation
     if stage_i == -1:
         dataset_i, transform = add_dataset_attribute(dataset_i)
-        dataset_i = create_ccd_dataset(dataset_i, transform, stage=0) # set stage=0 to get labelled data
+        dataset_i = create_ttd_dataset(dataset_i, transform, stage=0) # set stage=0 to get labelled data
         dataloader = torch.utils.data.DataLoader(
             dataset_i,
             batch_size=args.val_batch_size,
@@ -167,7 +168,7 @@ def create_dataloader(args, dataset_i, stage_i):
 
         unlabelled_val_dataset = None
         if len(dataset_i) > 1: 
-            if args.eval_version == 'ccd' and args.train == False:
+            if args.eval_version == 'ttd' and args.train == False:
                 unlabelled_val_dataset, labelled_val_dataset = dataset_i_list[-1], dataset_i_list[:len(dataset_i_list) - 1]
                 dataset_i = combined_dataset(
                     labelled_val_dataset, 
@@ -184,7 +185,7 @@ def create_dataloader(args, dataset_i, stage_i):
         else:
             dataset_i = dataset_i_list[0]
 
-        dataset_i = create_ccd_test_dataset(unlabelled_val_dataset, dataset_i, transform)
+        dataset_i = create_ttd_test_dataset(unlabelled_val_dataset, dataset_i, transform)
 
         dataloader = torch.utils.data.DataLoader(
             dataset_i,
@@ -206,8 +207,8 @@ def create_dataloader(args, dataset_i, stage_i):
             contrast_transform = data_util.StrongWeakView(strong_transform, transform)
 
         # if stage_i == 0, create dataloader for labelled data, while for stage_i > 0, create dataloader for unlabelled data
-        dataset_i_ = create_ccd_dataset(dataset_i, transform, stage=stage_i)
-        contrast_dataset_i = create_ccd_dataset(dataset_i, contrast_transform, stage=stage_i)
+        dataset_i_ = create_ttd_dataset(dataset_i, transform, stage=stage_i)
+        contrast_dataset_i = create_ttd_dataset(dataset_i, contrast_transform, stage=stage_i)
 
         if stage_i == 0:
             # during stage 0, create sampler to balance the class distribution
@@ -249,7 +250,7 @@ def create_dataloader_test(args, dataset_i, stage_i):
     # create dataloader for evaluation
     if stage_i == -1:
         dataset_i, transform = add_dataset_attribute(dataset_i)
-        dataset_i = create_ccd_dataset(dataset_i, transform, stage=0) # set stage=0 to get labelled data
+        dataset_i = create_ttd_dataset(dataset_i, transform, stage=0) # set stage=0 to get labelled data
         dataloader = torch.utils.data.DataLoader(
             dataset_i,
             batch_size=args.val_batch_size,
@@ -269,7 +270,7 @@ def create_dataloader_test(args, dataset_i, stage_i):
 
         unlabelled_val_dataset = None
         if len(dataset_i) > 1: 
-            if args.eval_version == 'ccd' and args.train == False:
+            if args.eval_version == 'ttd' and args.train == False:
                 unlabelled_val_dataset, labelled_val_dataset = dataset_i_list[-1], dataset_i_list[:len(dataset_i_list) - 1]
                 dataset_i = combined_dataset(
                     labelled_val_dataset, 
@@ -286,7 +287,7 @@ def create_dataloader_test(args, dataset_i, stage_i):
         else:
             dataset_i = dataset_i_list[0]
 
-        dataset_i = create_ccd_test_dataset(unlabelled_val_dataset, dataset_i, transform)
+        dataset_i = create_ttd_test_dataset(unlabelled_val_dataset, dataset_i, transform)
 
         dataloader = torch.utils.data.DataLoader(
             dataset_i,
@@ -311,8 +312,8 @@ def create_dataloader_test(args, dataset_i, stage_i):
             contrast_transform = data_util.StrongWeakView(strong_transform, transform)
 
         # if stage_i == 0, create dataloader for labelled data, while for stage_i > 0, create dataloader for unlabelled data
-        dataset_i_ = create_ccd_dataset(dataset_i, transform, stage=stage_i)
-        contrast_dataset_i = create_ccd_dataset(dataset_i, contrast_transform, stage=stage_i)
+        dataset_i_ = create_ttd_dataset(dataset_i, transform, stage=stage_i)
+        contrast_dataset_i = create_ttd_dataset(dataset_i, contrast_transform, stage=stage_i)
 
         if stage_i == 0:
             # during stage 0, create sampler to balance the class distribution
@@ -342,7 +343,7 @@ def create_dataloader_test(args, dataset_i, stage_i):
         return dataloader_dict
 
 
-def build_CCD_dataset(args, split):
+def build_TTD_dataset(args, split):
     '''
     Input: dataset configuration
     Return: datasets for experimetnal task
@@ -351,7 +352,7 @@ def build_CCD_dataset(args, split):
     '''
     dataset_name = args.dataset
     number_of_stage = args.n_stage
-    ccd_dataset = [None] * (number_of_stage)
+    ttd_dataset = [None] * (number_of_stage)
     datasets = list()
     dataset_l = None
 
@@ -373,7 +374,7 @@ def build_CCD_dataset(args, split):
         transform = data_util.build_transform('test', args)
         dataset = dataset_val
     else:
-        raise ValueError('Split {} is not supported for CCD training.'.format(split))
+        raise ValueError('Split {} is not supported for TTD training.'.format(split))
     
     # Get dataset classes
     dataset_target = np.array(dataset[1])
@@ -382,21 +383,21 @@ def build_CCD_dataset(args, split):
         class_i = np.where(np.array(dataset_target == i))[0]
         np.random.shuffle(class_i)
 
-        # If class index is in labelled dataset, split it according to args.ccd_split_ratio for every stage
+        # If class index is in labelled dataset, split it according to args.ttd_split_ratio for every stage
         if i < args.labelled_data:
-            class_i_l, class_i_u = np.split(class_i, [int(len(class_i) * args.ccd_split_ratio[0][0])])
+            class_i_l, class_i_u = np.split(class_i, [int(len(class_i) * args.ttd_split_ratio[0][0])])
             dataset_l = class_i_l if dataset_l is None else np.concatenate((dataset_l, class_i_l), axis=0)
             for stage_i in range(number_of_stage):
-                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ccd_split_ratio[0][stage_i + 1])])
-                ccd_dataset[stage_i] = class_i_u if ccd_dataset[stage_i] is None else np.concatenate((ccd_dataset[stage_i], class_i_u), axis=0)
+                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ttd_split_ratio[0][stage_i + 1])])
+                ttd_dataset[stage_i] = class_i_u if ttd_dataset[stage_i] is None else np.concatenate((ttd_dataset[stage_i], class_i_u), axis=0)
                 class_i_u = class_i_u_
 
         else:
             stage_selector = (i % args.labelled_data) // ((args.classes - args.labelled_data) // args.n_stage) 
             class_i_u = class_i
             for stage_i in range(number_of_stage - stage_selector):
-                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ccd_split_ratio[stage_selector + 1][stage_i])])
-                ccd_dataset[stage_i + stage_selector] = class_i_u if ccd_dataset[stage_i + stage_selector] is None else np.concatenate((ccd_dataset[stage_i + stage_selector], class_i_u), axis=0)
+                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ttd_split_ratio[stage_selector + 1][stage_i])])
+                ttd_dataset[stage_i + stage_selector] = class_i_u if ttd_dataset[stage_i + stage_selector] is None else np.concatenate((ttd_dataset[stage_i + stage_selector], class_i_u), axis=0)
                 class_i_u = class_i_u_
 
     # Create training dataset according to index list
@@ -405,7 +406,7 @@ def build_CCD_dataset(args, split):
     datasets.append(dataset_l)
     
     # Second index to rest correspond to mix training dataset (Known and unknown data)
-    for dataset_u_i in ccd_dataset:
+    for dataset_u_i in ttd_dataset:
         dataset_u_i = (dataset, dataset_u_i, transform)
         datasets.append(dataset_u_i)
 
@@ -413,7 +414,7 @@ def build_CCD_dataset(args, split):
 
 
 
-def build_CCD_dataset_test(args, split):
+def build_TTD_dataset_test(args, split):
     '''
     Input: dataset configuration
     Return: datasets for experimetnal task
@@ -422,7 +423,7 @@ def build_CCD_dataset_test(args, split):
     '''
     dataset_name = args.dataset
     number_of_stage = args.n_stage
-    ccd_dataset = [None] * (number_of_stage)
+    ttd_dataset = [None] * (number_of_stage)
     datasets = list()
     dataset_l = None
 
@@ -444,7 +445,7 @@ def build_CCD_dataset_test(args, split):
         transform = data_util.build_transform('test', args)
         dataset = dataset_val
     else:
-        raise ValueError('Split {} is not supported for CCD training.'.format(split))
+        raise ValueError('Split {} is not supported for TTD training.'.format(split))
     
     # Get dataset classes
     dataset_target = np.array(dataset[1])
@@ -453,21 +454,25 @@ def build_CCD_dataset_test(args, split):
         class_i = np.where(np.array(dataset_target == i))[0]
         np.random.shuffle(class_i)
 
-        # If class index is in labelled dataset, split it according to args.ccd_split_ratio for every stage
+        # If class index is in labelled dataset, split it according to args.ttd_split_ratio for every stage
         if i < args.labelled_data:
-            class_i_l, class_i_u = np.split(class_i, [int(len(class_i) * args.ccd_split_ratio_test[0][0])])
+            class_i_l, class_i_u = np.split(class_i, [int(len(class_i) * args.ttd_split_ratio_test[0][0])])
             dataset_l = class_i_l if dataset_l is None else np.concatenate((dataset_l, class_i_l), axis=0)
             for stage_i in range(number_of_stage):
-                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ccd_split_ratio_test[0][stage_i + 1])])
-                ccd_dataset[stage_i] = class_i_u if ccd_dataset[stage_i] is None else np.concatenate((ccd_dataset[stage_i], class_i_u), axis=0)
+                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ttd_split_ratio_test[0][stage_i + 1])])
+                ttd_dataset[stage_i] = class_i_u if ttd_dataset[stage_i] is None else np.concatenate((ttd_dataset[stage_i], class_i_u), axis=0)
                 class_i_u = class_i_u_
 
         else:
             stage_selector = (i % args.labelled_data) // ((args.classes - args.labelled_data) // args.n_stage)
+            # if(i<90):
+            #     stage_selector = 0
+            # else:
+            #     stage_selector = 2
             class_i_u = class_i
             for stage_i in range(number_of_stage - stage_selector):
-                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ccd_split_ratio_test[stage_selector + 1][stage_i])])
-                ccd_dataset[stage_i + stage_selector] = class_i_u if ccd_dataset[stage_i + stage_selector] is None else np.concatenate((ccd_dataset[stage_i + stage_selector], class_i_u), axis=0)
+                class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ttd_split_ratio_test[stage_selector + 1][stage_i])])
+                ttd_dataset[stage_i + stage_selector] = class_i_u if ttd_dataset[stage_i + stage_selector] is None else np.concatenate((ttd_dataset[stage_i + stage_selector], class_i_u), axis=0)
                 class_i_u = class_i_u_
 
     # Create training dataset according to index list
@@ -476,7 +481,7 @@ def build_CCD_dataset_test(args, split):
     datasets.append(dataset_l)
     
     # Second index to rest correspond to mix training dataset (Known and unknown data)
-    for dataset_u_i in ccd_dataset:
+    for dataset_u_i in ttd_dataset:
         dataset_u_i = (dataset, dataset_u_i, transform)
         datasets.append(dataset_u_i)
 

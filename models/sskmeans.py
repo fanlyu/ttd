@@ -15,7 +15,39 @@ from util.eval_util import log_accs_from_preds
 from util.util import info
 from models.sskmeans_utils.faster_mix_k_means_pytorch import K_Means as SemiSupKMeans
 
+
+# from __future__ import print_function
+# import collections
+# import argparse
+# import os
+# import sys
+# import math
+# import time
+
+# import datetime
+# import numpy as np
+# import tensorflow as tf
+# from copy import deepcopy
+# from six.moves import cPickle as pickle
+# from tqdm import tqdm
+
+# from utils.data_utils import construct_split_cifar
+# from utils.utils import get_sample_weights, sample_from_dataset, update_episodic_memory, concatenate_datasets, samples_for_each_class, sample_from_dataset_icarl, compute_fgt, load_task_specific_data
+# from utils.utils import average_acc_stats_across_runs, average_fgt_stats_across_runs, update_reservior, der_update_reservior, average_ltr_across_runs
+# from utils.vis_utils import plot_acc_multiple_runs, plot_histogram, snapshot_experiment_meta_data, snapshot_experiment_eval, snapshot_task_labels
+# from model import Model
+# import os
+# from scipy.spatial import distance
+# from utils.sv_knn_buffer import SVKNNBuffer
+# from utils.buffer import GSS_Buffer
+# from utils.buffer import Buffer
+
+
+
+
+
 device = torch.device('cuda')
+
 
 def eval_kmeans_semi_sup(args, model, data_loader, stage_i, K=None):
     """
@@ -23,9 +55,9 @@ def eval_kmeans_semi_sup(args, model, data_loader, stage_i, K=None):
     """
     all_acc, old_acc, new_acc = None, None, None
 
-    if args.ccd_model == 'PromptCCD_w_L2P_known_K' or args.ccd_model == 'PromptCCD_w_DP_known_K':
-        _, original_model = model
-        original_model = original_model.cuda()
+    args.ttd_model == 'TTD_L2P_known_K'
+    _, original_model = model
+    original_model = original_model.cuda()
 
     # Get the ground truth number of classes for this stage when K is not provided, i.e, when K is known
     if K is None:
@@ -47,13 +79,10 @@ def eval_kmeans_semi_sup(args, model, data_loader, stage_i, K=None):
     with torch.no_grad():
         for batch in tqdm(data_loader, desc=f'Test w/ {args.eval_version} metric', leave=False, bar_format="{desc}{percentage:3.0f}%|{bar}{r_bar}", ncols=80):
             data, label, _, mask_lab_ = batch
-       
-            if args.ccd_model == 'PromptCCD_w_GMP_known_K' or args.ccd_model == 'PromptCCD_w_GMP_unknown_K':
-                feats = model(data.cuda(), task_id=stage_i, res=None)['x'][:, 0]
-
-            elif args.ccd_model == 'PromptCCD_w_L2P_known_K' or args.ccd_model == 'PromptCCD_w_DP_known_K': 
-                dino_features = original_model(data.cuda())['pre_logits'] 
-                feats = model(data.cuda(), task_id=stage_i, cls_features=dino_features)['x'][:, 0] 
+    
+            args.ttd_model == 'TTD_L2P_known_K'
+            dino_features = original_model(data.cuda())['pre_logits'] 
+            feats = model(data.cuda(), task_id=stage_i, cls_features=dino_features)['x'][:, 0] 
 
             feats = torch.nn.functional.normalize(feats, dim=-1)
 
@@ -69,6 +98,7 @@ def eval_kmeans_semi_sup(args, model, data_loader, stage_i, K=None):
     mask_cls = mask_cls.astype(bool)
 
     all_feats = np.concatenate(all_feats)
+
 
     l_feats = all_feats[mask_lab]       # Get labelled set
     u_feats = all_feats[~mask_lab]      # Get unlabelled set
@@ -133,20 +163,15 @@ def eval_kmeans_semi_sup(args, model, data_loader, stage_i, K=None):
         
     return all_acc, old_acc, new_acc
 
-
 def eval_kmeans(args, model, val_loader, stage_i, epoch=None):
     """
     In this case, the test loader only consists of labelled dataset
     """
-    if args.ccd_model == 'PromptCCD_w_GMP_known_K' or args.ccd_model == 'PromptCCD_w_GMP_unknown_K':
-        model, _ = model
-        model.eval()
-    
-    elif args.ccd_model == 'PromptCCD_w_L2P_known_K' or args.ccd_model == 'PromptCCD_w_DP_known_K':
-        model, original_model = model
-        model.eval()
-        original_model.eval()
-        original_model = original_model.cuda() # check if this is necessary
+    args.ttd_model == 'TTD_L2P_known_K'
+    model, original_model = model
+    model.eval()
+    original_model.eval()
+    original_model = original_model.cuda() # check if this is necessary
 
     K = args.labelled_data
 
@@ -163,19 +188,16 @@ def eval_kmeans(args, model, val_loader, stage_i, epoch=None):
     mask = []
 
     for data, label, _, _ in tqdm(val_loader, desc=f'Eval @ epoch: {epoch}', leave=False, bar_format="{desc}{percentage:3.0f}%|{bar}{r_bar}", ncols=80):
-
-        if args.ccd_model == 'PromptCCD_w_GMP_known_K' or args.ccd_model == 'PromptCCD_w_GMP_unknown_K':
-            feats = model(data.cuda(), task_id=stage_i, res=None)['x'][:, 0] 
-
-        elif args.ccd_model == 'PromptCCD_w_L2P_known_K' or args.ccd_model == 'PromptCCD_w_DP_known_K':            
-            dino_features = original_model(data.cuda())['pre_logits']
-            feats = model(data.cuda(), task_id=stage_i, cls_features=dino_features)['x'][:, 0]
+        args.ttd_model == 'TTD_L2P_known_K'           
+        dino_features = original_model(data.cuda())['pre_logits']
+        feats = model(data.cuda(), task_id=stage_i, cls_features=dino_features)['x'][:, 0]
 
         feats = torch.nn.functional.normalize(feats, dim=-1)
 
         val_feats.append(feats)
         val_targets.append(label)
         mask.append(np.array([True if x.item() in range(K) else False for x in label]))
+
 
     val_feats = torch.cat(val_feats).cpu().numpy()
     val_targets = np.concatenate(val_targets)
@@ -203,6 +225,7 @@ def eval_kmeans(args, model, val_loader, stage_i, epoch=None):
     return  all_acc, old_acc, new_acc
 
 
+
 def use_pretrained_model(args):
 
     if args.selected_pretrained_model_for_eval == 'dino':
@@ -226,26 +249,13 @@ def use_pretrained_model(args):
 
 
 def load_finetuned_model(args, model, stage_i):
-    if args.ccd_model == 'PromptCCD_w_GMP_known_K' or args.ccd_model == 'PromptCCD_w_GMP_unknown_K':
+    if args.ttd_model == 'TTD_L2P_known_K':
         model, _ = model
-        info(f"Use {args.ccd_model} stage {stage_i} model for testing")
-        state_dict = torch.load(glob(os.path.join(args.save_path, 'model', f"{args.ccd_model}_stage_{stage_i}_model_best.pt"))[0], map_location='cpu')
+        info(f"Use {args.ttd_model} stage {stage_i} model for testing")
+        state_dict = torch.load(glob(os.path.join(args.save_path, 'model', f"{args.ttd_model}_stage_{stage_i}_model_best.pt"))[0], map_location='cpu')
         model.load_state_dict(state_dict)
-
-    elif args.ccd_model == 'PromptCCD_w_L2P_known_K':
-        model, _ = model
-        info(f"Use {args.ccd_model} stage {stage_i} model for testing")
-        state_dict = torch.load(glob(os.path.join(args.save_path, 'model', f"{args.ccd_model}_stage_{stage_i}_model_best.pt"))[0], map_location='cpu')
-        model.load_state_dict(state_dict)
-
-    elif args.ccd_model == 'PromptCCD_w_DP_known_K':
-        model, _ = model
-        info(f"Use {args.ccd_model} stage {stage_i} model for testing")
-        state_dict = torch.load(glob(os.path.join(args.save_path, 'model', f"{args.ccd_model}_stage_{stage_i}_model_best.pt"))[0], map_location='cpu')
-        model.load_state_dict(state_dict)
-
     else:
-        ValueError('Model {} does not exist.'.format(args.ccd_model))
+        ValueError('Model {} does not exist.'.format(args.ttd_model))
 
     model.cuda()
     model.eval()

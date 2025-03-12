@@ -1,6 +1,6 @@
 # Model configurations
 
-This README provides guidelines on how to configure hyperparameters. The `*.yaml` can be accesed at `config/%DATASET%/`.
+This README provides guidelines on how to configure **PromptCCD** hyperparameters. The `*.yaml` can be accesed at `config/%DATASET%/`.
 
 ## Important configs
 * `run_ccd`: set to true when running the model for training and testing.
@@ -31,4 +31,5 @@ This README provides guidelines on how to configure hyperparameters. The `*.yaml
 * `fit_gmm_every_n_epoch`: GMM optimiztion schedule. 
 * `num_gmm_samples`: number of gmm samples per class to be stored after training. 
 * `covariance_type`: GMM covariance types. 
+
 
