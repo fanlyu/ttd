@@ -1,0 +1,10 @@
+VALID_ARCH = ['fully', 'resnet18', 'resnet18_s', 'vgg16', 'mobilenet']
+CONV_ARCH = ['resnet18', 'resnet18_s', 'vgg16', 'mobilenet']
+SPLIT_DATA = ['cifar100', 'steel', 'cifar10', 'split_mnist', 'cub', 'awa', 'miniimagenet']
+BATCH_TEST = ['cifar100', 'cifar10-NI', 'cifar10']
+IMBALANCE = ['Step', 'Linear']
+COLOR = ['cifar100', 'cifar10-NI', 'cifar10', 'miniimagenet']
+RANDOM_MEM_RETRIEVE = ['Tiny', 'MER', 'SVKNN']
+MINIB_TEST = ['steel', 'cub', 'awa', 'miniimagenet']
+NEG_INF = -1e32
+EPSILON = 1e-32
