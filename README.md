@@ -6,8 +6,8 @@ We conduct our work mainly based on the environment and framework of "PromptCCD:
 
 The environment can be easily installed through [conda](https://docs.conda.io/projects/miniconda/en/latest/) and pip. After cloning this repository, run the following command:
 ```shell
-$ conda create -n promptccd python=3.10
-$ conda activate promptccd
+$ conda create -n ttd python=3.10
+$ conda activate ttd
 
 $ pip install scipy scikit-learn seaborn tensorboard kmeans-pytorch tensorboard opencv-python tqdm pycave timm
 $ conda install pytorch==2.1.2 torchvision==0.16.2 pytorch-cuda=12.1 -c pytorch -c nvidia
@@ -31,7 +31,7 @@ $ CUDA_VISIBLE_DEVICES=%GPU_INDEX% python main.py
  and to change the config file or change the dataset, following code can be revised in `main.py`
 
 ```
-parser.add_argument('--config', type=str, default="config/cifar100/cifar100_promptccd_w_l2p2s.yaml", help='config file')
+parser.add_argument('--config', type=str, default="config/cifar100/cifar100_ttd_l2p2s.yaml", help='config file')
 ```
 
 The training script will generate a directory in `exp/%SAVE_PATH%` where `%SAVE_PATH%` can be specified in the `"configs/%DATASET%/*.yaml"` file. 
@@ -39,7 +39,7 @@ The training script will generate a directory in `exp/%SAVE_PATH%` where `%SAVE_
 
  The file structure should be:
 ```
-promptccd
+ttd
 ├── config/
 |   └── %DATASET%/
 :       └── *.yaml (model configuration)

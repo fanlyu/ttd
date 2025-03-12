@@ -1,8 +1,8 @@
 CONFIG:
   run_ttd: True
   ttd_model: TTD_L2P_known_K
-  manual_seed: 1231
-  save_path: exp/ttd_tiny_140_115
+  manual_seed: 1234
+  save_path: exp/ttd_tiny_140
   transductive_evaluation: True   
   eval_version: ttd
 
