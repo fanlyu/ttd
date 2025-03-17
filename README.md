@@ -1,6 +1,6 @@
-# Test-Time Discovery via Hashing Memory
+# Test-Time Discovery via Hashing Memory [Arxiv](https://arxiv.org/abs/2503.10699)
 
-We conduct our work mainly based on the environment and framework of "PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery"
+We conduct our work mainly based on the environment and framework of "PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery [Arxiv](https://arxiv.org/pdf/2407.19001)"
 
 ## Environment
 
@@ -54,3 +54,14 @@ ttd
         └── log_SS-
 ```
 
+## Cite Us
+
+```
+@article{lyu2025testtimediscoveryhashingmemory,
+      title={Test-Time Discovery via Hashing Memory}, 
+      author={Fan Lyu and Tianle Liu and Zhang Zhang and Fuyuan Hu and Liang Wang},
+      year={2025},
+      journal={arXiv preprint arXiv:2503.10699},
+      url={https://arxiv.org/abs/2503.10699}, 
+}
+```
