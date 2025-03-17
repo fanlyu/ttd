@@ -1,6 +1,6 @@
-# Test-Time Discovery via Hashing Memory [Arxiv](https://arxiv.org/abs/2503.10699)
+# Test-Time Discovery via Hashing Memory ([Arxiv](https://arxiv.org/abs/2503.10699))
 
-We conduct our work mainly based on the environment and framework of "PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery [Arxiv](https://arxiv.org/pdf/2407.19001)"
+We conduct our work mainly based on the environment and framework of "PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery ([Arxiv](https://arxiv.org/pdf/2407.19001))"
 
 ## Environment
 
