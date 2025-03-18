@@ -1,8 +1,13 @@
 # Test-Time Discovery via Hashing Memory ([Arxiv](https://arxiv.org/abs/2503.10699))
 
-We conduct our work mainly based on the environment and framework of "PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery ([Arxiv](https://arxiv.org/pdf/2407.19001))"
+We introduce Test-Time Discovery (TTD) as a novel task that addresses class shifts during testing, requiring models to simultaneously identify emerging categories while preserving previously learned ones. A key challenge in TTD is distinguishing newly discovered classes from those already identified. To address this, we propose a training-free, hash-based memory mechanism that enhances class discovery through fine-grained comparisons with past test samples. Leveraging the characteristics of unknown classes, our approach introduces hash representation based on feature scale and directions, utilizing Locality-Sensitive Hashing (LSH) for efficient grouping of similar samples. This enables test samples to be easily and quickly compared with relevant past instances. Furthermore, we design a collaborative classification strategy, combining a prototype classifier for known classes with an LSH-based classifier for novel ones. To enhance reliability, we incorporate a self-correction mechanism that refines memory labels through hash-based neighbor retrieval, ensuring more stable and accurate class assignments. Experimental results demonstrate that our method achieves good discovery of novel categories while maintaining performance on known classes, establishing a new paradigm in model testing. 
+
+
+
 
 ## Environment
+
+We conduct our work mainly based on the environment and framework of "PromptCCD: Learning Gaussian Mixture Prompt Pool for Continual Category Discovery ([Arxiv](https://arxiv.org/pdf/2407.19001))"
 
 The environment can be easily installed through [conda](https://docs.conda.io/projects/miniconda/en/latest/) and pip. After cloning this repository, run the following command:
 ```shell
