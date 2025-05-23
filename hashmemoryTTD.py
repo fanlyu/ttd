@@ -331,8 +331,6 @@ class TTD_simple:
     def predict_and_discover(self,unlabeled_test_data, stage_i, TTT=False, replay=True, self_correction=True):
         self.stage_i = stage_i
         self.model.eval()
-        input_num = 0
-        a_known_acc, a_truelabel_agreement_ratio, a_truelabel_entropy, a_cluster_agreement_ratio, a_cluster_entropy = 0,0,0,0,0
 
         k = 1
         from collections import deque
@@ -346,9 +344,7 @@ class TTD_simple:
         for batch in tqdm(unlabeled_test_data['default'], desc='Batches', leave=False, bar_format="{desc}{percentage:3.0f}%|{bar}{r_bar}", ncols=80):
             T3 = time.perf_counter()
             ############ 1. forward and obtain features ###################
-            inputs, labels, uq_idxs, mask_lab = batch 
-
-            # images, labels, *other = self.unlabeled_test_data['default']         
+            inputs, labels, uq_idxs, mask_lab = batch       
             
             with torch.no_grad():
 
@@ -425,9 +421,6 @@ class TTD_simple:
 
         for label in self.data.memory.keys():
             self.data.memory[label] = [tensor.cpu() for tensor in self.data.memory[label]]
-
-        feats_ori = feats
-        preds_ori = preds
 
         max_samples_per_label = 2
         max_total_replay_samples = 20 

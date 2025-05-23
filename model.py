@@ -29,7 +29,7 @@ class TTD_L2P_known_K_VIT_SSK_model:
             model = (self.contrastive_model.model, self.contrastive_model.original_model, self.contrastive_model.projection_head)
         else: 
             info(f"Start training process for {self.args.ttd_model}, stage {self.stage_i}")
-            model = self.contrastive_model.fitqiu(train_dataloader, val_dataloader)
+            model = self.contrastive_model.fitobj(train_dataloader, val_dataloader)
         
         return model
 

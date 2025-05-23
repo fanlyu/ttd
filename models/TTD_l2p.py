@@ -18,7 +18,7 @@ from models.sskmeans import eval_kmeans, eval_kmeans_semi_sup
 import numpy as np
 
 import os
-import pickle  # 添加导入以便保存文件
+import pickle
 from collections import defaultdict, Counter
 import itertools
 import random
@@ -100,7 +100,6 @@ class TTD_Model:
     def get_criterion_test(self, feats, preds, centroids, margin=0.5):
         mag_loss = self.mag_constraint(feats, preds)
         contrastive_loss = ContrastiveLoss(margin)(feats, preds)
-        # 增加一个old class的蒸馏损失
         distill_loss = DistillationLoss_Centroid(self.old_classes)(feats, preds, centroids)
         loss = 0.01 * contrastive_loss
         loss = (0.1*contrastive_loss + 100*distill_loss)*0.01

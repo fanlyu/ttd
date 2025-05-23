@@ -465,10 +465,7 @@ def build_TTD_dataset_test(args, split):
 
         else:
             stage_selector = (i % args.labelled_data) // ((args.classes - args.labelled_data) // args.n_stage)
-            # if(i<90):
-            #     stage_selector = 0
-            # else:
-            #     stage_selector = 2
+
             class_i_u = class_i
             for stage_i in range(number_of_stage - stage_selector):
                 class_i_u, class_i_u_ = np.split(class_i_u, [int(len(class_i_u) * args.ttd_split_ratio_test[stage_selector + 1][stage_i])])
